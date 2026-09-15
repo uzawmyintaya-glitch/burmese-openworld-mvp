@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unit",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "type": { "type": "string", "enum": ["infantry","archer","cavalry","hero"] },
+    "level": { "type": "integer", "minimum": 1 },
+    "hp": { "type": "integer", "minimum": 1 },
+    "attack": { "type": "integer", "minimum": 0 },
+    "defense": { "type": "integer", "minimum": 0 },
+    "speed": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["id","name","type","level","hp","attack"]
+}
