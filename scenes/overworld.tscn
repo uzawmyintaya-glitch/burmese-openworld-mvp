@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[node name="Overworld" type="Node2D"]
+
+[node name="Player" type="Node2D" parent="."]
+position = Vector2(128,128)
+
+[node name="LabelHint" type="Label" parent="."]
+text = "Tap to move. Open Town with [T]."
+rect_position = Vector2(8,8)

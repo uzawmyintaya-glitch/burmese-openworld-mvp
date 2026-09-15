@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[node name="Battle" type="Node2D"]
+
+[node name="Arena" type="Node2D" parent="."]
+
+[node name="PlayerUnit" type="Node2D" parent="Arena"]
+position = Vector2(80, 120)
+
+[node name="EnemyUnit" type="Node2D" parent="Arena"]
+position = Vector2(220, 120)

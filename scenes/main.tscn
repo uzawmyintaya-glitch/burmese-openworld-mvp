@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[node name="Main" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="LabelTitle" type="Label" parent="CanvasLayer"]
+text = "Burmese Openworld MVP"
+rect_position = Vector2(16, 8)
+
+[node name="ButtonStart" type="Button" parent="CanvasLayer"]
+text = "Start"
+rect_position = Vector2(16, 48)
+
+[connection signal="pressed" from="ButtonStart" to="." method="_on_ButtonStart_pressed"]

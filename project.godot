@@ -1,0 +1,8 @@
+[gd_resource type="ConfigFile" load_steps=2 format=2]
+
+[application]
+config/name="Burmese Openworld MVP"
+config/description="Godot MVP: 2D Myanmar open-world prototype (pixel art), Android 7+ target, Burmese+English UI, minimal playable demo scaffold."
+
+[rendering]
+quality/driver/driver_name="GLES3"
