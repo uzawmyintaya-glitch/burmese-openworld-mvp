@@ -1,0 +1,6 @@
+{
+  "TownA": {"x": 80, "y": 120, "connections": ["Crossroads"], "travel_time": 3, "encounter_chance": 0.4, "difficulty": 1},
+  "Crossroads": {"x": 200, "y": 100, "connections": ["TownA","Forest"], "travel_time": 2, "encounter_chance": 0.2, "difficulty": 1},
+  "Forest": {"x": 340, "y": 180, "connections": ["Crossroads","BanditCamp"], "travel_time": 4, "encounter_chance": 0.6, "difficulty": 2},
+  "BanditCamp": {"x": 520, "y": 160, "connections": ["Forest"], "travel_time": 5, "encounter_chance": 0.8, "difficulty": 3}
+}
