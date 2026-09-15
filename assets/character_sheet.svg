@@ -1,0 +1,27 @@
+<!-- Simple 4-frame pixel walk/idle/attack placeholder sprite as SVG -> will be used as texture atlas replacement later -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" viewBox="0 0 128 32">
+  <!-- frame 1 -->
+  <g id="f0" transform="translate(0,0)">
+    <rect x="0" y="0" width="32" height="32" fill="#000"/>
+    <rect x="6" y="4" width="20" height="10" fill="#f8d7a8"/>
+    <rect x="6" y="14" width="20" height="12" fill="#6a9b4f"/>
+  </g>
+  <!-- frame 2 -->
+  <g id="f1" transform="translate(32,0)">
+    <rect x="32" y="0" width="32" height="32" fill="#000"/>
+    <rect x="38" y="4" width="20" height="10" fill="#f8d7a8"/>
+    <rect x="38" y="14" width="20" height="12" fill="#5f8a45"/>
+  </g>
+  <!-- frame 3 -->
+  <g id="f2" transform="translate(64,0)">
+    <rect x="64" y="0" width="32" height="32" fill="#000"/>
+    <rect x="70" y="4" width="20" height="10" fill="#f8d7a8"/>
+    <rect x="70" y="14" width="20" height="12" fill="#4f7a35"/>
+  </g>
+  <!-- frame 4 (attack pose) -->
+  <g id="f3" transform="translate(96,0)">
+    <rect x="96" y="0" width="32" height="32" fill="#000"/>
+    <rect x="102" y="2" width="16" height="10" fill="#f8d7a8"/>
+    <rect x="90" y="14" width="28" height="12" fill="#6a9b4f"/>
+  </g>
+</svg>

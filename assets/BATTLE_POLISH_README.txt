@@ -1,17 +1,19 @@
-Polish notes for battle improvements added:
+Polish updates:
 
-What's improved:
-- Improved unit.gd: attack timing, delayed damage application, signals for damaged/died/attacked.
-- battle.gd: mobile-friendly Attack and Special buttons, damage popups, labels update, audio SFX via runtime generator.
-- audio_sfx.gd: runtime synthesized short hit/special sounds (no external audio files required).
+Added features per request: 1) animated sprite hooks, 2) hit VFX and screen shake, 5) multi-enemy formation fights, 7) prefer real OGG audio with fallback.
+
+Files added/updated:
+- scenes/battle.tscn: added Camera2D, CPUParticles2D and spawn template
+- scripts/battle.gd: multi-enemy spawn, hit VFX, screen shake, updated UI
+- scripts/audio_manager.gd: uses OGG assets when available, otherwise falls back to synth
+- assets/character_sheet.svg: placeholder atlas (4 frames)
+- assets/audio/README-audio.md: where to place OGG files
+
+Notes for artists & export:
+- Replace assets/character_sheet.svg with a PNG sprite sheet (frames left-to-right). Frame size chosen by me: 32x32 per frame in this placeholder. If you prefer different per-frame size (48x48), replace textures and update SpriteFrames accordingly in Godot.
+- For best mobile results, provide stripped-down 2-3 frame attack animations and keep atlases compressed.
 
 How to test:
-1) Open scenes/battle.tscn and ensure the root scene name is 'Battle' (this project expects /root/Battle path for some lookups).
-2) Run the scene. Use the on-screen Attack button or click the enemy to damage. Enemy will approach and attack.
-3) Observe damage popups and HP label updates.
-
-Future polish suggestions:
-- Add AnimatedSprite2D or SpriteFrames for attack/death animations.
-- Add particle effects when hit using CPUParticles2D or GPUParticles2D.
-- Replace SVG placeholders with pixel PNGs and use sprite atlases.
-- Improve AI: flanking, retreat, group behaviors.
+1) Open scenes/battle.tscn in Godot 4.1+ and run.
+2) It will spawn multiple enemy copies; use Attack or Special buttons to fight.
+3) To use real audio, add OGG files under assets/audio/ as named above and restart the scene.

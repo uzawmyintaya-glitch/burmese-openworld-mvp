@@ -1,28 +1,17 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [node name="Battle" type="Node2D"]
 
-group = "scene"
-
 [node name="Arena" type="Node2D" parent="."]
 
-[node name="PlayerUnit" type="Node2D" parent="Arena"]
-position = Vector2(80, 120)
+[node name="Camera2D" type="Camera2D" parent="Arena"]
+current = true
 
-[node name="Sprite" type="Sprite2D" parent="PlayerUnit"]
+[node name="SpawnTemplate" type="Node2D" parent="Arena"]
+position = Vector2(220,120)
+
+[node name="Sprite" type="Sprite2D" parent="SpawnTemplate"]
 texture = ExtResource( 1 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerUnit"]
-shape = null
-
-[node name="EnemyUnit" type="Node2D" parent="Arena"]
-position = Vector2(220, 120)
-
-[node name="Sprite" type="Sprite2D" parent="EnemyUnit"]
-texture = ExtResource( 2 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyUnit"]
-shape = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -31,8 +20,16 @@ text = "Player HP: 100/100"
 rect_position = Vector2(8, 8)
 
 [node name="EnemyHPLabel" type="Label" parent="CanvasLayer"]
-text = "Enemy HP: 100/100"
+text = "Enemies: 0"
 rect_position = Vector2(200, 8)
 
+[node name="Particles" type="CPUParticles2D" parent="Arena"]
+amount = 24
+lifetime = 0.4
+one_shot = false
+explosiveness = 1.0
+preprocess = 0.0
+speed_scale = 1.0
+emit_timeout = 0.0
+
 [ext_resource path="res://assets/pixel_player.svg" type="Texture2D" id=1]
-[ext_resource path="res://assets/pixel_enemy.svg" type="Texture2D" id=2]
