@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" viewBox="0 0 128 32">
+  <!-- Enemy variant B (4 frames) -->
+  <g transform="translate(0,0)">
+    <rect x="0" y="0" width="32" height="32" fill="#000"/>
+    <rect x="6" y="4" width="20" height="10" fill="#cfc28b"/>
+    <rect x="6" y="14" width="20" height="12" fill="#8f6b4a"/>
+  </g>
+  <g transform="translate(32,0)">
+    <rect x="32" y="0" width="32" height="32" fill="#000"/>
+    <rect x="38" y="4" width="20" height="10" fill="#cfc28b"/>
+    <rect x="38" y="14" width="20" height="12" fill="#7f5b3a"/>
+  </g>
+  <g transform="translate(64,0)">
+    <rect x="64" y="0" width="32" height="32" fill="#000"/>
+    <rect x="70" y="4" width="20" height="10" fill="#cfc28b"/>
+    <rect x="70" y="14" width="20" height="12" fill="#6f4b2a"/>
+  </g>
+  <g transform="translate(96,0)">
+    <rect x="96" y="0" width="32" height="32" fill="#000"/>
+    <rect x="102" y="2" width="16" height="10" fill="#cfc28b"/>
+    <rect x="90" y="14" width="28" height="12" fill="#8f6b4a"/>
+  </g>
+</svg>

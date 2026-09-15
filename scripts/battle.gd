@@ -1,6 +1,6 @@
 extends Node2D
 
-# Battle manager with multiple enemy support, hit VFX (particles), screen shake, and audio manager
+# Battle manager with multiple enemy support, hit VFX (particles), screen shake, audio manager and LOD for particles
 
 onready var arena = $Arena
 onready var player = $Arena/PlayerUnit
@@ -19,18 +19,36 @@ var popups = []
 var shake_time = 0.0
 var shake_strength = 0.0
 
+var enemy_textures = [
+    "res://assets/enemy1.svg",
+    "res://assets/enemy2.svg",
+    "res://assets/enemy3.svg"
+]
+
 func _ready():
     # attach improved unit scripts to player
     if not player.get_script():
         player.set_script(load("res://scripts/unit.gd"))
     # hide template
     template.visible = false
+    # particle LOD based on processor count (simple heuristic)
+    var proc = 1
+    if OS.has_method("get_processor_count"):
+        proc = OS.get_processor_count()
+    if proc <= 2:
+        particles.amount = 8
+    elif proc <= 4:
+        particles.amount = 16
+    else:
+        particles.amount = 28
+
     # spawn enemies in formation
     _spawn_enemies(enemy_count)
     # connect signals for dynamic enemies
     for e in enemies:
-        e.connect("damaged", Callable(self, "_on_unit_damaged"))
-        e.connect("died", Callable(self, "_on_enemy_died"))
+        if e:
+            e.connect("damaged", Callable(self, "_on_unit_damaged"))
+            e.connect("died", Callable(self, "_on_enemy_died"))
     player.connect("damaged", Callable(self, "_on_unit_damaged"))
     player.connect("died", Callable(self, "_on_player_died"))
 
@@ -57,6 +75,12 @@ func _spawn_enemies(count: int) -> void:
             inst.set_script(load("res://scripts/unit.gd"))
         inst.is_enemy = true
         inst.target = player
+        # swap sprite texture by variant if present
+        var spr = inst.get_node_or_null("Sprite")
+        if spr:
+            var tex_path = enemy_textures[i % enemy_textures.size()]
+            if ResourceLoader.exists(tex_path):
+                spr.texture = load(tex_path)
         enemies.append(inst)
 
 func _create_ui():
