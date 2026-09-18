@@ -4,8 +4,8 @@
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="LabelTown" type="Label" parent="UI"]
-text = "Town - Shop / Inn / Recruit (stub)"
+[node name="LabelTitle" type="Label" parent="UI"]
+text = "Town - Beta (stub)"
 rect_position = Vector2(8,8)
 
 [node name="ButtonShop" type="Button" parent="UI"]
@@ -14,7 +14,12 @@ rect_position = Vector2(8,40)
 
 [node name="ButtonRecruit" type="Button" parent="UI"]
 text = "Recruit"
-rect_position = Vector2(100,40)
+rect_position = Vector2(120,40)
+
+[node name="ButtonBack" type="Button" parent="UI"]
+text = "Back"
+rect_position = Vector2(240,40)
 
 [connection signal="pressed" from="ButtonShop" to="." method="_on_ButtonShop_pressed"]
 [connection signal="pressed" from="ButtonRecruit" to="." method="_on_ButtonRecruit_pressed"]
+[connection signal="pressed" from="ButtonBack" to="." method="_on_ButtonBack_pressed"]
