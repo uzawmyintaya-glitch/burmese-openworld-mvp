@@ -1,19 +1,14 @@
 extends Node
 
-# Encounter composition builder and betasave integration
-# Generates enemy group parameters for a battle encounter
-
-var base_data = {
-    "enemy_types": ["infantry","archer","cavalry"],
-    "difficulty": 1,
-    "enemies": []
-}
+# Encounter builder passes enemy composition to BattleManager
+# This is the main Beta integration layer between overworld/travel and fights.
 
 func build_encounter(node_name: String, difficulty: int = 1) -> Dictionary:
     var enemies = []
     var count = clamp(1 + difficulty, 1, 6)
+    var enemy_types = ["infantry","archer","cavalry"]
     for i in range(count):
-        var kind = base_data["enemy_types"][i % base_data["enemy_types"].size()]
+        var kind = enemy_types[i % enemy_types.size()]
         enemies.append({
             "id": "enemy_%d_%s" % [i, kind],
             "name": "%s Raider" % kind.capitalize(),

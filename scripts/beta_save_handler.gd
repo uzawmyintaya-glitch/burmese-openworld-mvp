@@ -1,7 +1,7 @@
 class_name SaveHandler
 extends Node
 
-# Save/load party + location state using JSON
+# Save/load party + location state with JSON
 
 const SAVE_PATH := "user://beta_save.json"
 
