@@ -17,6 +17,18 @@ var party_data = {
     ]
 }
 
+var shop_items = [
+    {"id": "item_1", "name": "Rice", "type": "consumable", "price": 10},
+    {"id": "item_2", "name": "Steel Sword", "type": "weapon", "price": 35},
+    {"id": "item_3", "name": "Herbal Salve", "type": "consumable", "price": 18}
+]
+
+var recruit_pool = [
+    {"name": "Militia", "type": "infantry", "cost": 30, "hp": 85, "attack": 13, "defense": 6, "speed": 5},
+    {"name": "Marksman", "type": "archer", "cost": 40, "hp": 75, "attack": 17, "defense": 4, "speed": 8},
+    {"name": "Horseman", "type": "cavalry", "cost": 55, "hp": 95, "attack": 19, "defense": 7, "speed": 9}
+]
+
 var save_handler = null
 
 func _ready():
@@ -25,11 +37,19 @@ func _ready():
         add_child(save_handler)
     _load_party_state()
     _refresh_label()
+    _show_shop_status()
 
 func _load_party_state():
     var state = save_handler.load_state()
     if state.size() > 0:
-        party_data = state
+        if state.has("units"):
+            party_data["units"] = state["units"]
+        if state.has("gold"):
+            party_data["gold"] = state["gold"]
+        if state.has("location"):
+            party_data["location"] = state["location"]
+        if state.has("inventory"):
+            party_data["inventory"] = state["inventory"]
 
 func _save_party_state():
     if save_handler:
@@ -39,39 +59,53 @@ func _refresh_label():
     var title = get_node_or_null("UI/LabelTitle")
     if title:
         title.text = "Town - %s | Gold: %d | Party: %d" % [party_data["location"], party_data["gold"], party_data["units"].size()]
+    _show_shop_status()
+
+func _show_shop_status(message: String = "") -> void:
+    var status = get_node_or_null("UI/LabelStatus")
+    if status == null:
+        return
+    if message == "":
+        var shop_names = []
+        for item in shop_items:
+            shop_names.append("%s (%d)" % [item["name"], item["price"]])
+        status.text = "Shop: %s" % ", ".join(shop_names)
+    else:
+        status.text = message
 
 func _on_ButtonShop_pressed():
-    # Simple shop: buy one item if enough gold
-    var item = party_data["inventory"][0]
+    # Simple shop: buy first item if enough gold
+    var item = shop_items[0]
     if party_data["gold"] >= item["price"]:
         party_data["gold"] -= item["price"]
-        print("Bought %s" % item["name"])
+        party_data["inventory"].append(item)
         _save_party_state()
         _refresh_label()
+        _show_shop_status("Bought %s for %d gold." % [item["name"], item["price"]])
     else:
-        print("Not enough gold for %s" % item["name"])
+        _show_shop_status("Not enough gold for %s." % item["name"])
 
 func _on_ButtonRecruit_pressed():
-    # Simple recruit: add a basic unit if enough gold
-    var recruit_cost = 30
-    if party_data["gold"] >= recruit_cost:
-        party_data["gold"] -= recruit_cost
-        var new_unit = {
-            "id": "unit_%d" % (party_data["units"].size() + 1),
-            "name": "Militia",
-            "type": "infantry",
-            "level": 1,
-            "hp": 85,
-            "attack": 13,
-            "defense": 6,
-            "speed": 5
-        }
-        party_data["units"].append(new_unit)
-        print("Recruit success: %s" % new_unit["name"])
-        _save_party_state()
-        _refresh_label()
-    else:
-        print("Not enough gold to recruit")
+    # Recruit first available unit in pool if enough gold
+    for unit in recruit_pool:
+        if party_data["gold"] >= unit["cost"]:
+            party_data["gold"] -= unit["cost"]
+            var new_unit = {
+                "id": "unit_%d" % (party_data["units"].size() + 1),
+                "name": unit["name"],
+                "type": unit["type"],
+                "level": 1,
+                "hp": unit["hp"],
+                "attack": unit["attack"],
+                "defense": unit["defense"],
+                "speed": unit["speed"]
+            }
+            party_data["units"].append(new_unit)
+            _save_party_state()
+            _refresh_label()
+            _show_shop_status("Recruited %s for %d gold." % [unit["name"], unit["cost"]])
+            return
+    _show_shop_status("Not enough gold for any recruit.")
 
 func _on_ButtonBack_pressed():
     # Return to overworld scene stub

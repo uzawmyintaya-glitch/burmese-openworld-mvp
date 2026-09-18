@@ -8,6 +8,10 @@
 text = "Town - Beta (stub)"
 rect_position = Vector2(8,8)
 
+[node name="LabelStatus" type="Label" parent="UI"]
+text = "Shop / Recruit status"
+rect_position = Vector2(8,80)
+
 [node name="ButtonShop" type="Button" parent="UI"]
 text = "Shop"
 rect_position = Vector2(8,40)
