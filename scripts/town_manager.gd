@@ -1,7 +1,7 @@
 extends Node2D
 
 # Town manager for Beta
-# Provides basic shop, recruit, and back actions and integrates with party data + save state
+# Provides shop, recruit, and back actions and integrates with party data + save state.
 
 var party_data = {
     "leader": "Player",
@@ -42,14 +42,19 @@ func _ready():
 func _load_party_state():
     var state = save_handler.load_state()
     if state.size() > 0:
-        if state.has("units"):
-            party_data["units"] = state["units"]
-        if state.has("gold"):
-            party_data["gold"] = state["gold"]
-        if state.has("location"):
-            party_data["location"] = state["location"]
-        if state.has("inventory"):
-            party_data["inventory"] = state["inventory"]
+        _merge_saved_state(state)
+
+func _merge_saved_state(state: Dictionary) -> void:
+    if state.has("units"):
+        party_data["units"] = state["units"]
+    if state.has("gold"):
+        party_data["gold"] = int(state["gold"])
+    if state.has("location"):
+        party_data["location"] = str(state["location"])
+    if state.has("inventory"):
+        party_data["inventory"] = state["inventory"]
+    if state.has("leader"):
+        party_data["leader"] = state["leader"]
 
 func _save_party_state():
     if save_handler:
@@ -74,7 +79,6 @@ func _show_shop_status(message: String = "") -> void:
         status.text = message
 
 func _on_ButtonShop_pressed():
-    # Simple shop: buy first item if enough gold
     var item = shop_items[0]
     if party_data["gold"] >= item["price"]:
         party_data["gold"] -= item["price"]
@@ -86,7 +90,6 @@ func _on_ButtonShop_pressed():
         _show_shop_status("Not enough gold for %s." % item["name"])
 
 func _on_ButtonRecruit_pressed():
-    # Recruit first available unit in pool if enough gold
     for unit in recruit_pool:
         if party_data["gold"] >= unit["cost"]:
             party_data["gold"] -= unit["cost"]
@@ -108,7 +111,6 @@ func _on_ButtonRecruit_pressed():
     _show_shop_status("Not enough gold for any recruit.")
 
 func _on_ButtonBack_pressed():
-    # Return to overworld scene stub
     var over = load("res://scenes/overworld.tscn")
     if over:
         var inst = over.instantiate()

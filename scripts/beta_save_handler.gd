@@ -2,6 +2,7 @@ class_name SaveHandler
 extends Node
 
 # Save/load party + location state with JSON
+# This is the canonical state file for the Beta loop.
 
 const SAVE_PATH := "user://beta_save.json"
 

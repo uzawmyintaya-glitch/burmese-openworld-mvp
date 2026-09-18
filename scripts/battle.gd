@@ -1,6 +1,6 @@
 extends Node2D
 
-# Battle manager with multiple enemy support, hit VFX (particles), screen shake, audio manager and LOD for particles
+# Battle manager with multiple enemy support, hit VFX (particles), screen shake, and battle rewards sync.
 
 onready var arena = $Arena
 onready var player = $Arena/PlayerUnit
@@ -18,33 +18,18 @@ var audio_mgr
 var popups = []
 var shake_time = 0.0
 var shake_strength = 0.0
-
-var enemy_textures = [
-    "res://assets/enemy1.svg",
-    "res://assets/enemy2.svg",
-    "res://assets/enemy3.svg"
-]
+var reward_mgr = null
+var encounter_data = {}
 
 func _ready():
-    # attach improved unit scripts to player
+    reward_mgr = preload("res://scripts/battle_rewards.gd").new()
+    add_child(reward_mgr)
+    encounter_data = _load_encounter_data()
+
     if not player.get_script():
         player.set_script(load("res://scripts/unit.gd"))
-    # hide template
     template.visible = false
-    # particle LOD based on processor count (simple heuristic)
-    var proc = 1
-    if OS.has_method("get_processor_count"):
-        proc = OS.get_processor_count()
-    if proc <= 2:
-        particles.amount = 8
-    elif proc <= 4:
-        particles.amount = 16
-    else:
-        particles.amount = 28
-
-    # spawn enemies in formation
     _spawn_enemies(enemy_count)
-    # connect signals for dynamic enemies
     for e in enemies:
         if e:
             e.connect("damaged", Callable(self, "_on_unit_damaged"))
@@ -52,13 +37,18 @@ func _ready():
     player.connect("damaged", Callable(self, "_on_unit_damaged"))
     player.connect("died", Callable(self, "_on_player_died"))
 
-    # audio manager
     audio_mgr = preload("res://scripts/audio_manager.gd").new()
     add_child(audio_mgr)
     audio_mgr.play_music()
-
-    # create UI
     _create_ui()
+
+func _load_encounter_data() -> Dictionary:
+    var raw = ProjectSettings.get_setting("application/run/last_encounter", "")
+    if typeof(raw) == TYPE_STRING and raw != "":
+        var parsed = JSON.parse_string(raw)
+        if typeof(parsed) == TYPE_DICTIONARY:
+            return parsed
+    return {"difficulty": 1, "node": "TownA", "enemies": []}
 
 func _spawn_enemies(count: int) -> void:
     enemies.clear()
@@ -70,17 +60,10 @@ func _spawn_enemies(count: int) -> void:
         inst.visible = true
         inst.position = base_pos + Vector2((i - half) * formation_spacing, 0)
         arena.add_child(inst)
-        # attach unit script
         if not inst.get_script():
             inst.set_script(load("res://scripts/unit.gd"))
         inst.is_enemy = true
         inst.target = player
-        # swap sprite texture by variant if present
-        var spr = inst.get_node_or_null("Sprite")
-        if spr:
-            var tex_path = enemy_textures[i % enemy_textures.size()]
-            if ResourceLoader.exists(tex_path):
-                spr.texture = load(tex_path)
         enemies.append(inst)
 
 func _create_ui():
@@ -101,7 +84,6 @@ func _create_ui():
     _update_labels()
 
 func _on_attack_pressed():
-    # basic attack: nearest enemy
     var target = _nearest_enemy_to(player.global_position)
     if target:
         if player.has_method("attack"):
@@ -111,7 +93,6 @@ func _on_attack_pressed():
         audio_mgr.play_hit()
 
 func _on_special_pressed():
-    # AoE around player
     for e in enemies.duplicate():
         if e and e.is_inside_tree() and e.global_position.distance_to(player.global_position) < 80:
             e.take_damage(30)
@@ -137,7 +118,6 @@ func _spawn_popup(text, world_pos):
     popups.append(life)
 
 func _emit_hit_vfx(world_pos):
-    # spawn simple particles at position
     particles.global_position = world_pos
     particles.one_shot = true
     particles.emitting = true
@@ -196,11 +176,11 @@ func _nearest_enemy_to(pos: Vector2):
     return best
 
 func _on_enemy_died():
-    # cleanup dead enemies list
     enemies = [e for e in enemies if e and e.is_inside_tree()]
 
 func _on_player_died():
     get_tree().paused = true
+    _apply_battle_result("defeat")
     var dialog = Label.new()
     dialog.text = "You lost!"
     dialog.rect_position = get_viewport().size / 2 - Vector2(48, 12)
@@ -215,8 +195,17 @@ func _check_battle_end():
         _on_battle_won()
 
 func _on_battle_won():
+    if get_tree().paused:
+        return
     get_tree().paused = true
+    _apply_battle_result("victory")
     var dialog = Label.new()
     dialog.text = "You won!"
     dialog.rect_position = get_viewport().size / 2 - Vector2(48, 12)
     ui_layer.add_child(dialog)
+
+func _apply_battle_result(result: String) -> void:
+    if reward_mgr:
+        reward_mgr.apply_reward(result, encounter_data)
+        # clear the temporary encounter payload for next run
+        ProjectSettings.set_setting("application/run/last_encounter", "")

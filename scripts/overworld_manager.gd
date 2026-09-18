@@ -1,6 +1,7 @@
 extends Node2D
 
-# Overworld manager with save/load and current location persistence
+# Overworld manager with save/load and current location persistence.
+# This is the base flow between town/overworld and encounter management.
 
 @export var start_node: String = "TownA"
 var current_node: String
@@ -15,7 +16,7 @@ func _ready():
     add_child(save_handler)
     var saved = save_handler.load_state()
     if saved.size() > 0 and saved.has("location"):
-        current_node = saved["location"]
+        current_node = str(saved["location"])
     var mp = "res://data/overworld/map.json"
     if ResourceLoader.exists(mp):
         var txt = FileAccess.get_file_as_string(mp)
@@ -33,12 +34,21 @@ func _on_ButtonTravel_pressed():
         return
     _show_destination_choices()
 
-func _save_current_state():
+func _save_current_state() -> void:
     var data = {
         "location": current_node,
         "gold": 120,
-        "units": []
+        "units": [],
+        "inventory": []
     }
+    var existing = save_handler.load_state()
+    if existing.size() > 0:
+        if existing.has("gold"):
+            data["gold"] = int(existing["gold"])
+        if existing.has("units"):
+            data["units"] = existing["units"]
+        if existing.has("inventory"):
+            data["inventory"] = existing["inventory"]
     if save_handler:
         save_handler.save_state(data)
 
@@ -94,13 +104,14 @@ func _on_travel_complete() -> void:
     var lbl = get_node_or_null("UI/LabelTitle")
     if lbl:
         lbl.text = "Overworld - Arrived: %s" % current_node
-
     if randf() < 0.5:
         _trigger_encounter(current_node)
 
 func _trigger_encounter(node_name: String) -> void:
-    var em = preload("res://scripts/encounter_builder.gd").new()
-    var enc = em.build_encounter(node_name, 1)
+    var builder = preload("res://scripts/encounter_builder.gd").new()
+    var enc = builder.build_encounter(node_name, 1)
+    var payload = JSON.stringify(enc)
+    ProjectSettings.set_setting("application/run/last_encounter", payload)
     var battle_scene = load("res://scenes/battle.tscn")
     if battle_scene:
         var packed = battle_scene.instantiate()
